@@ -3,6 +3,8 @@
 
 ![Alt text](https://github.com/Nishant2018/Twitter_Scrapping_-_Sentiment_Analysis/blob/main/1.jpg)
 
+
+![Alt text](https://github.com/Nishant2018/Twitter_Scrapping_-_Sentiment_Analysis/blob/main/Screenshot%20(188).png)
 ## Overview
 
 This web application performs sentiment analysis on tweets using Twitter's API. The application provides two primary functionalities:
