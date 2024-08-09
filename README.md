@@ -1,5 +1,3 @@
-Here's a Markdown description for your project that you can use in your README file:
-
 ```markdown
 # Twitter Sentiment Analysis Web Application
 
