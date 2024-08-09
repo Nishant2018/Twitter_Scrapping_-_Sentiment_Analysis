@@ -1,4 +1,4 @@
-```markdown
+
 # Twitter Sentiment Analysis Web Application
 
 ## Overview
@@ -102,8 +102,7 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ### Contact
 
-For any questions or feedback, please contact [your-email@example.com](nishantraghuwanshi2018@gmail.com).
+For any questions or feedback, please contact [nishantraghuwanshi2018@gmail.com](nishantraghuwanshi2018@gmail.com).
 
-```
 
 Feel free to adjust the sections and details according to your project's specific requirements.
