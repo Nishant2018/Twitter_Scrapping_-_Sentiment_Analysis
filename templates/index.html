@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Twitter Sentiment Analysis</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="../static/css/styles.css">
+    <style>
+        #twitterFeedCard {
+            position: fixed;
+            top: 300px;
+            right: 20px;
+            width: 230px;
+            z-index: 9999;
+            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            background-color: #dcf391;
+        }
+        #twitterFeedCard .card-body {
+            padding: 25px;
+            max-height: 400px; /* Set a maximum height for the feed */
+            overflow-y: auto; /* Enable vertical scroll */
+        }
+        
+        /* Spinner CSS */
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+            border-width: 0.3em;
+        }
+        .spinner-container {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+        /* Navbar CSS */
+        .navbar {
+            background-color: #007bff;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center; /* Center title */
+            
+            top: 0; /* Stay at the top */
+            width: 100%; /* Full width */
+            z-index: 9999; /* Ensure it stays on top of other elements */
+        }
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            position: absolute; /* To position logo */
+            left: 0;
+            padding: 0 1rem;
+        }
+        .navbar-logo {
+            height: 60px; /* Adjust logo size */
+        }
+        .navbar-title {
+            margin: 0;
+            color: #141212;
+            font-size: 2.5rem;
+            text-align: center;
+            font-weight: bold;
+            font-family: Georgia, serif;
+        }
+        .disabled-section {
+            pointer-events: none;
+            opacity: 0.6;
+        }
+        .warning-message {
+            color: red;
+            display: none;
+            margin-top: 10px;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            border: 1px solid #007bff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        .modal-header {
+            background-color: #007bff;
+            color: white;
+            border-bottom: 1px solid #007bff;
+        }
+        .modal-footer {
+            border-top: 1px solid #007bff;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <a class="navbar-brand" href="#">
+            <img src="../static/css/Logo.png" alt="Company Logo" class="navbar-logo">
+        </a>
+        <div class="navbar-title">Aeonix Research & Innovations Pvt. Ltd</div>
+    </nav>
+    <div class="container mt-5">
+        <p class="text-center text-muted">Choose an option 👇 to proceed with sentiment analysis. 🤔</p>
+
+        <!-- Button Group for choices -->
+        <div class="btn-group d-flex mb-4" role="group" aria-label="Sentiment Analysis Options">
+            <button type="button" class="btn btn-primary w-50" id="sentimentCountButton">Sentiment Count 🔄</button>
+            <button type="button" class="btn btn-secondary w-50" id="getSentimentOnlyButton">Get Sentiment Only 🔍</button>
+        </div>
+
+        <!-- Sentiment Count Section -->
+        <div id="sentimentCountSection" class="card p-4 shadow-sm">
+            <h1 class="text-center mb-4">Twitter Sentiment Analysis Count</h1>
+            <p class="text-center text-muted">Enter a Twitter handle and specify the number of tweets to analyze 👇. Our system will fetch 🔎 the latest tweets and provide a sentiment analysis, classifying them as positive 😁 or negative 😑.</p>
+            <form method="POST" id="analysisFormCount">
+                <div class="mb-3">
+                    <label for="handlesCount" class="form-label">Twitter Handles (comma-separated) 👇:</label>
+                    <input type="text" id="handlesCount" name="handles" class="form-control" placeholder="NASA" required>
+                    <small class="form-text text-muted">Example: NASA, SpaceX</small>
+                </div>
+                <div class="mb-3">
+                    <label for="tweets_desiredCount" class="form-label">Number of Tweets Desired (Optional) 🤷‍♀️:</label>
+                    <input type="number" id="tweets_desiredCount" name="tweets_desired" class="form-control" placeholder="20">
+                    <small class="form-text text-muted">Maximum: 20 tweets per handle due to API limitations.</small>
+                </div>
+                
+                <script>
+                    document.getElementById('analysisFormCount').addEventListener('submit', function(event) {
+                        var tweetsDesiredInput = document.getElementById('tweets_desiredCount');
+                        if (tweetsDesiredInput.value === "") {
+                            tweetsDesiredInput.value = 20; // Set default value to 20 if empty
+                        }
+                        document.getElementById('spinnerContainer').style.display = 'block';
+                    });
+                </script>
+                
+                <button type="submit" name="action" value="Analyze Tweets" class="btn btn-primary w-100">🔍 Analyze Tweets 🔍</button>
+                <div class="warning-message" id="warningMessageCount">You have chosen 'Get Sentiment Only'. Please use the 'Get Sentiment Only' section for input.</div>
+            </form>
+        </div>
+        <div id="twitterFeedCard" class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="text-center">Live Twitter Feed</h5>
+                <div id="twitter-feed">
+                    <a class="twitter-timeline" href="https://twitter.com/Google?ref_src=twsrc%5Etfw">Tweets by Google</a>
+                </div>
+            </div>
+        </div>
+    
+        <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- Get Sentiment Only Section -->
+        <div id="getSentimentOnlySection" class="card p-4 shadow-sm mt-4">
+            <h1 class="text-center mb-4">Sentiment Analysis</h1>
+            <p class="text-center text-muted">Enter a sentence 👇 and our system will provide a sentiment analysis, classifying it as positive 😊 or negative 😣 .</p>
+            <form method="POST" action="/" id="analysisFormSentiment">
+                <div class="mb-3">
+                    <label for="sentence" class="form-label">Enter the sentence 👇:</label>
+                    <input type="text" id="sentence" name="sentence" class="form-control" placeholder="This is awesome" required>
+                    <small class="form-text text-muted">Example: I get the gold medal in competitions</small>
+                </div>
+                <button type="submit" name="action" value="Get Sentiment" class="btn btn-primary w-100"> 🧐 Get Sentiment 🧐</button>
+                <div class="warning-message" id="warningMessageSentiment">You have chosen 'Get Sentiment Only'. Please use the 'Sentiment Analysis' section for input.</div>
+            </form>
+            
+        </div>
+        <div class="modal fade" id="sentimentResultModal" tabindex="-1" aria-labelledby="sentimentResultModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="sentimentResultModalLabel">Sentiment Analysis Result</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p><strong>Label:</strong> {{ sentiment_label }}</p>
+                        <p><strong>Score:</strong> {{ sentiment_score }}</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="digitalWatch" class="digital-watch">
+            <div id="clock"></div>
+        </div>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Check if the sentiment label is available
+                var sentimentLabel = "{{ sentiment_label }}";
+                var sentimentScore = "{{ sentiment_score }}";
+                if (sentimentLabel) {
+                    var myModal = new bootstrap.Modal(document.getElementById('sentimentResultModal'), {
+                        keyboard: false
+                    });
+                    // Set the content of the modal
+                    document.querySelector('#sentimentResultModal .modal-body').innerHTML = `
+                        <p><strong>Label:</strong> ${sentimentLabel}</p>
+                        <p><strong>Score:</strong> ${sentimentScore}</p>
+                    `;
+                    myModal.show();
+                }
+            });
+        </script>
+    
+        
+        <!-- Modal for displaying loading spinner -->
+        <div class="modal fade" id="loadingModal" tabindex="-1" aria-labelledby="loadingModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-body text-center">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2">Please wait for a while...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if dataset_url %}
+        <div class="card p-4 mt-4 shadow-sm">
+            <h2 class="text-center">Results</h2>
+            <p class="text-center text-muted">The sentiment analysis results are based on the most recent {{ tweets_desired }} tweets from each specified Twitter handle.</p>
+            <p class="text-center"><a href="{{ dataset_url }}" target="_blank">Download CSV Data</a></p>
+            <h3 class="text-center">Sentiment Analysis Dashboard</h3>
+            <div class="row">
+                <div class="col text-center">
+                    <div class="alert alert-success" role="alert">
+                        <h4>Positive Tweets</h4>
+                        <p>{{ positive_count }}</p>
+                    </div>
+                </div>
+                <div class="col text-center">
+                    <div class="alert alert-danger" role="alert">
+                        <h4>Negative Tweets</h4>
+                        <p>{{ negative_count }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center mt-4">
+                <h4>Sentiment Distribution</h4>
+                <img src="data:image/png;base64,{{ plot_url }}" alt="Sentiment Distribution" class="img-fluid">
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        document.getElementById('sentimentCountButton').addEventListener('click', function() {
+            document.getElementById('sentimentCountSection').classList.remove('disabled-section');
+            document.getElementById('getSentimentOnlySection').classList.add('disabled-section');
+            document.getElementById('warningMessageSentiment').style.display = 'none';
+        });
+
+        document.getElementById('getSentimentOnlyButton').addEventListener('click', function() {
+            document.getElementById('sentimentCountSection').classList.add('disabled-section');
+            document.getElementById('getSentimentOnlySection').classList.remove('disabled-section');
+            document.getElementById('warningMessageCount').style.display = 'none';
+        });
+
+        document.getElementById('handlesCount').addEventListener('input', function() {
+            if (document.getElementById('getSentimentOnlySection').classList.contains('disabled-section')) {
+                document.getElementById('warningMessageCount').style.display = 'block';
+            }
+        });
+
+        document.getElementById('sentence').addEventListener('input', function() {
+            if (document.getElementById('sentimentCountSection').classList.contains('disabled-section')) {
+                document.getElementById('warningMessageSentiment').style.display = 'block';
+            }
+        });
+
+        document.getElementById('analysisFormCount').addEventListener('submit', function(event) {
+            document.getElementById('spinnerContainer').style.display = 'block';
+        });
+
+        document.getElementById('analysisFormSentiment').addEventListener('submit', function(event) {
+            document.getElementById('spinnerContainer').style.display = 'block';
+        });
+    </script>
+    <script>
+        function updateClock() {
+            var now = new Date();
+            var hours = now.getHours().toString().padStart(2, '0');
+            var minutes = now.getMinutes().toString().padStart(2, '0');
+            var seconds = now.getSeconds().toString().padStart(2, '0');
+            
+            document.getElementById('clock').textContent = hours + ':' + minutes + ':' + seconds;
+        }
+    
+        setInterval(updateClock, 1000);
+        updateClock(); // Initial call to set time immediately
+    </script>
+    
+</body>
+</html>
