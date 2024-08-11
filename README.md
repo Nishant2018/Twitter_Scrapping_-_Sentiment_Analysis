@@ -6,7 +6,7 @@
 
 ![Alt text](https://github.com/Nishant2018/Twitter_Scrapping_-_Sentiment_Analysis/blob/main/Screenshot%20(188).png)
 ## Overview
-
+   
 This web application performs sentiment analysis on tweets using Twitter's API. The application provides two primary functionalities:
 1. **Sentiment Count**: Analyzes a specified number of tweets from given Twitter handles and provides a sentiment breakdown (positive or negative).
 2. **Get Sentiment Only**: Analyzes the sentiment of a single user-provided sentence.
