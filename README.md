@@ -16,7 +16,7 @@ The application features an interactive interface with options to view live Twit
 ## Features
 
 - **Twitter Sentiment Count**: Fetches and analyzes tweets from specified Twitter handles.
-- **Single Sentence Sentiment Analysis**: Analyzes the sentiment of a user-provided sentence.
+- **Single Sentence Sentiment Analysis**: Analyzes the sentiment of a user-provided sentence.   
 - **Live Twitter Feed**: Displays a live feed of tweets from selected handles.
 - **Visualizations**: Provides a visual representation of positive and negative sentiment counts.
 - **Responsive Design**: Mobile-friendly and interactive UI with Bootstrap.
