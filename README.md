@@ -14,7 +14,7 @@ This web application performs sentiment analysis on tweets using Twitter's API. 
 The application features an interactive interface with options to view live Twitter feeds and visualize sentiment analysis results.
 
 ## Features
-
+   
 - **Twitter Sentiment Count**: Fetches and analyzes tweets from specified Twitter handles.
 - **Single Sentence Sentiment Analysis**: Analyzes the sentiment of a user-provided sentence.   
 - **Live Twitter Feed**: Displays a live feed of tweets from selected handles.
